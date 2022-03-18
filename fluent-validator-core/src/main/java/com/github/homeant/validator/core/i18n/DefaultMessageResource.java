@@ -23,9 +23,11 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.context.support.AbstractMessageSource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
 import java.text.MessageFormat;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -34,12 +36,13 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 动态国际化
+ *
  * @author junchen junchen1314@foxmail.com
  * @Data 2018-12-07 10:55:14
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class MessageDynamicResource extends AbstractMessageSource implements ResourceLoaderAware, InitializingBean {
+public class DefaultMessageResource extends AbstractMessageSource implements ResourceLoaderAware, InitializingBean {
 
 	private ResourceLoader resourceLoader;
 
@@ -50,7 +53,7 @@ public class MessageDynamicResource extends AbstractMessageSource implements Res
 	public void reload() {
 		LOCAL_CACHE.clear();
 		List<MessageResource> list = messageService.getAllMessage();
-		Optional.of(list).get().forEach(r -> {
+		Optional.ofNullable(list).orElse(Collections.emptyList()).forEach(r -> {
 			Locale locale = parseLocaleValue(r.getLanguage());
 			Map<Locale, MessageFormat> map = LOCAL_CACHE.getOrDefault(r.getCode(), new ConcurrentHashMap<>());
 			map.put(locale, createMessageFormat(r.getMessage(), locale));
@@ -60,16 +63,15 @@ public class MessageDynamicResource extends AbstractMessageSource implements Res
 	}
 
 	@Override
-	public void setResourceLoader(ResourceLoader resourceLoader) {
+	public void setResourceLoader(@Nullable ResourceLoader resourceLoader) {
 		this.resourceLoader = resourceLoader;
 	}
 
 	@Override
-	protected MessageFormat resolveCode(String code, Locale locale) {
+	protected MessageFormat resolveCode(@Nullable String code, @Nullable Locale locale) {
 		Map<Locale, MessageFormat> map = LOCAL_CACHE.get(code);
 		if (map != null) {
-			MessageFormat format = map.get(locale);
-			return format;
+			return map.get(locale);
 		}
 		return null;
 	}
@@ -83,12 +85,9 @@ public class MessageDynamicResource extends AbstractMessageSource implements Res
 	 * and satisfied {@link BeanFactoryAware}, {@code ApplicationContextAware} etc.
 	 * <p>This method allows the bean instance to perform validation of its overall
 	 * configuration and final initialization when all bean properties have been set.
-	 *
-	 * @throws Exception in the event of misconfiguration (such as failure to set an
-	 *                   essential property) or if initialization fails for any other reason
 	 */
 	@Override
-	public void afterPropertiesSet() throws Exception {
+	public void afterPropertiesSet() {
 		this.reload();
 	}
 }

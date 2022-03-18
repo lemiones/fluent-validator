@@ -16,7 +16,6 @@ public class FluentValidatorPostProcessor extends MethodNameFluentValidatorPostP
 
 	@Override
 	public FluentValidator postProcessBeforeDoValidate(FluentValidator f, MethodInvocation methodInvocation) {
-		FluentValidator fluentValidator = super.postProcessBeforeDoValidate(f, methodInvocation);
-		return fluentValidator;
+		return super.postProcessBeforeDoValidate(f, methodInvocation);
 	}
 }

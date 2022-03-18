@@ -16,8 +16,16 @@
 package com.github.homeant.validator.boot;
 
 
+import com.baidu.unbiz.fluentvalidator.ValidateCallback;
+import com.baidu.unbiz.fluentvalidator.support.MessageSupport;
+import com.github.homeant.validator.ValidatorProperties;
+import com.github.homeant.validator.core.callback.DefaultValidateCallback;
+import com.github.homeant.validator.core.i18n.DefaultMessageResource;
+import com.github.homeant.validator.core.i18n.MessageProvider;
 import com.github.homeant.validator.core.processor.FluentValidatorPostProcessor;
 import com.github.homeant.validator.core.spring.FluentValidateInterceptor;
+import com.github.homeant.validator.core.spring.ValidatorBeanPostProcessor;
+import lombok.Data;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -29,16 +37,6 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
-
-import com.baidu.unbiz.fluentvalidator.ValidateCallback;
-import com.baidu.unbiz.fluentvalidator.support.MessageSupport;
-import com.github.homeant.validator.core.spring.ValidatorBeanPostProcessor;
-import com.github.homeant.validator.ValidatorProperties;
-import com.github.homeant.validator.core.callback.DefaultValidateCallback;
-import com.github.homeant.validator.core.i18n.IMessageService;
-import com.github.homeant.validator.core.i18n.MessageDynamicResource;
-
-import lombok.Data;
 
 import javax.validation.Validator;
 
@@ -69,15 +67,15 @@ public class ValidatorAutoConfiguration {
 	 * @Data 2018-12-10 16:04:51
 	 */
 	@Bean
-	@ConditionalOnBean(IMessageService.class)
-	public MessageSource messageSource(IMessageService messageService, MessageSource messageSource) {
-		MessageDynamicResource resource = new MessageDynamicResource(messageService);
+	@ConditionalOnBean(MessageProvider.class)
+	public MessageSource messageSource(MessageProvider messageService, MessageSource messageSource) {
+		DefaultMessageResource resource = new DefaultMessageResource(messageService);
 		resource.setParentMessageSource(messageSource);
 		return resource;
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(IMessageService.class)
+	@ConditionalOnMissingBean(MessageProvider.class)
 	public MessageSupport messageSupport(MessageSource messageSource) {
 		MessageSupport support = new MessageSupport();
 		support.setMessageSource(messageSource);

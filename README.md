@@ -9,9 +9,9 @@
 
 ```xml
 <dependency>
-	<groupId>com.github.homeant</groupId>
+	<groupId>com.github.lemione</groupId>
 	<artifactId>spring-boot-starter-fluent-validator</artifactId>
-	<version>1.0.0.M1</version>
+	<version>1.0.2</version>
 </dependency>
 ```
 

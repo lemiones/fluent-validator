@@ -1,27 +1,5 @@
 package com.github.homeant.validator.core.spring;
 
-import static com.baidu.unbiz.fluentvalidator.ResultCollectors.toComplex;
-
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.List;
-import java.util.Locale;
-
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
-
-import org.aopalliance.intercept.MethodInterceptor;
-import org.aopalliance.intercept.MethodInvocation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.aop.support.AopUtils;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-
 import com.baidu.unbiz.fluentvalidator.ComplexResult;
 import com.baidu.unbiz.fluentvalidator.DefaultValidateCallback;
 import com.baidu.unbiz.fluentvalidator.FluentValidator;
@@ -37,6 +15,26 @@ import com.baidu.unbiz.fluentvalidator.util.CollectionUtil;
 import com.baidu.unbiz.fluentvalidator.util.LocaleUtil;
 import com.baidu.unbiz.fluentvalidator.util.Preconditions;
 import com.baidu.unbiz.fluentvalidator.util.ReflectionUtil;
+import org.aopalliance.intercept.MethodInterceptor;
+import org.aopalliance.intercept.MethodInvocation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.aop.support.AopUtils;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.util.Collection;
+import java.util.List;
+import java.util.Locale;
+
+import static com.baidu.unbiz.fluentvalidator.ResultCollectors.toComplex;
 
 /**
  * 与Spring集成的拦截器，结合{@link FluentValid}注解装饰在参数前面，可以利用AOP来拦截请求，对参数进行校验
@@ -125,6 +123,7 @@ public class FluentValidateInterceptor implements MethodInterceptor, Initializin
 	 * @throws Throwable
 	 */
 	@Override
+	@SuppressWarnings("unchecked")
 	public Object invoke(MethodInvocation invocation) throws Throwable {
 		// Work out the target class: may be <code>null</code>.
 		// The TransactionAttributeSource should be passed the target class
@@ -137,22 +136,22 @@ public class FluentValidateInterceptor implements MethodInterceptor, Initializin
 			Class<?>[] parameterTypes = invocation.getMethod().getParameterTypes();
 			Method implMethod = ReflectionUtil.getMethod(targetClass, invocation.getMethod().getName(), parameterTypes);
 			Annotation[][] paramAnnotations = implMethod.getParameterAnnotations();
-			if (paramAnnotations != null) {
+			if (!ArrayUtil.isEmpty(paramAnnotations)) {
 				start:
 				for (int i = 0; i < paramAnnotations.length; i++) {
 					Annotation[] paramAnnotation = paramAnnotations[i];
 					if (ArrayUtil.isEmpty(paramAnnotation)) {
 						continue start;
 					}
-					for (int j = 0; j < paramAnnotation.length; j++) {
-						if (paramAnnotation[j].annotationType() == FluentValid.class) {
+					for (Annotation annotation : paramAnnotation) {
+						if (annotation.annotationType() == FluentValid.class) {
 							LOGGER.debug("Find @FluentValid annotation on index[" + i + "] parameter and ready to "
 									+ "validate for method " + implMethod);
 							ValidatorChain addOnValidatorChain =
-									getAddOnValidatorChain((FluentValid) paramAnnotation[j]);
-							Class<?>[] groups = ((FluentValid) paramAnnotation[j]).groups();
-							Class<?>[] excludeGroups = ((FluentValid) paramAnnotation[j]).excludeGroups();
-							boolean isFailFast = ((FluentValid) paramAnnotation[j]).isFailFast();
+									getAddOnValidatorChain((FluentValid) annotation);
+							Class<?>[] groups = ((FluentValid) annotation).groups();
+							Class<?>[] excludeGroups = ((FluentValid) annotation).excludeGroups();
+							boolean isFailFast = ((FluentValid) annotation).isFailFast();
 
 							FluentValidator fluentValidator = FluentValidator.checkAll(groups)
 									.setExcludeGroups(excludeGroups)
@@ -165,21 +164,19 @@ public class FluentValidateInterceptor implements MethodInterceptor, Initializin
 							if (Collection.class.isAssignableFrom(parameterTypes[i])) {
 								result = fluentValidator
 										.on(arguments[i], addOnValidatorChain)
-										.onEach((Collection) arguments[i],
-												new HibernateSupportedValidator()
-														.setHibernateDefaultErrorCode(hibernateDefaultErrorCode)
-														.setHiberanteValidator(validator))
+										.onEach((Collection<Object>) arguments[i], new HibernateSupportedValidator<>()
+												.setHibernateDefaultErrorCode(hibernateDefaultErrorCode)
+												.setHiberanteValidator(validator))
 										.when(arguments[i] != null)
-										.onEach((Collection) arguments[i])
+										.onEach((Collection<Object>) arguments[i])
 										.doValidate(callback)
 										.result(toComplex());
 							} else if (parameterTypes[i].isArray()) {
 								result = fluentValidator
 										.on(arguments[i], addOnValidatorChain)
-										.onEach(ArrayUtil.toWrapperIfPrimitive(arguments[i]),
-												new HibernateSupportedValidator()
-														.setHibernateDefaultErrorCode(hibernateDefaultErrorCode)
-														.setHiberanteValidator(validator))
+										.onEach(ArrayUtil.toWrapperIfPrimitive(arguments[i]), new HibernateSupportedValidator<>()
+												.setHibernateDefaultErrorCode(hibernateDefaultErrorCode)
+												.setHiberanteValidator(validator))
 										.when(arguments[i] != null)
 										.onEach(ArrayUtil.toWrapperIfPrimitive(arguments[i]))
 										.doValidate(callback)
@@ -187,10 +184,9 @@ public class FluentValidateInterceptor implements MethodInterceptor, Initializin
 							} else {
 								result = fluentValidator
 										.on(arguments[i], addOnValidatorChain)
-										.on(arguments[i],
-												new HibernateSupportedValidator()
-														.setHibernateDefaultErrorCode(hibernateDefaultErrorCode)
-														.setHiberanteValidator(validator))
+										.on(arguments[i], new HibernateSupportedValidator<>()
+												.setHibernateDefaultErrorCode(hibernateDefaultErrorCode)
+												.setHiberanteValidator(validator))
 										.when(arguments[i] != null)
 										.on(arguments[i])
 										.doValidate(callback)
@@ -233,11 +229,12 @@ public class FluentValidateInterceptor implements MethodInterceptor, Initializin
 	 * @param fluentValid 参数上的注解装饰
 	 * @return 验证器列表
 	 */
+	@SuppressWarnings("rawtypes")
 	private List<com.baidu.unbiz.fluentvalidator.Validator> getAddOnValidators(FluentValid fluentValid) {
 		Class<? extends com.baidu.unbiz.fluentvalidator.Validator>[] addOnValidatorClasses;
 		List<com.baidu.unbiz.fluentvalidator.Validator> addOnValidators = null;
 		if (!ArrayUtil.isEmpty(fluentValid.value())) {
-			LOGGER.debug(String.format("{} additional validators found"), fluentValid.value().length);
+			LOGGER.debug("{} additional validators found", fluentValid.value().length);
 			addOnValidatorClasses = fluentValid.value();
 			addOnValidators = CollectionUtil.createArrayList(fluentValid.value().length);
 			for (Class<? extends com.baidu.unbiz.fluentvalidator.Validator> addOnValidatorClass :

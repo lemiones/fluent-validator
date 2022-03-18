@@ -15,17 +15,18 @@
  */
 package com.github.homeant.validator.core.i18n;
 
-import java.util.List;
-
 import com.github.homeant.validator.core.domain.MessageResource;
+
+import java.util.List;
 
 
 /**
  * 动态国际化需要实现此接口
+ *
  * @author junchen junchen1314@foxmail.com
  * @Data 2018-12-07 11:38:01
  */
-public interface IMessageService {
+public interface MessageProvider {
 	default List<MessageResource> getAllMessage(Object... args) {
 		return null;
 	}
