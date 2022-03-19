@@ -16,7 +16,7 @@
 package com.github.homeant.validator.test;
 
 
-import com.github.homeant.validator.core.exception.ValidateFailException;
+import com.github.homeant.validator.core.exception.FluentValidateException;
 import com.github.homeant.validator.test.model.User;
 import com.github.homeant.validator.test.service.IUserService;
 import lombok.extern.slf4j.Slf4j;
@@ -47,7 +47,7 @@ public class ValidatorTest extends AbstractTestNGSpringContextTests {
 
 	@Autowired
 	private IUserService userService;
-	
+
 	@Autowired
 	private Validator validator;
 
@@ -63,8 +63,8 @@ public class ValidatorTest extends AbstractTestNGSpringContextTests {
 			User user = new User();
 			userService.installUser(user);
 		} catch (Exception e) {
-			if (e instanceof ValidateFailException) {
-				ValidateFailException exception = (ValidateFailException) e;
+			if (e instanceof FluentValidateException) {
+				FluentValidateException exception = (FluentValidateException) e;
 				exception.getErrors().forEach(r -> {
 					log.debug("errors:{}{}", r.getField(), r.getErrorMsg());
 				});
@@ -86,6 +86,6 @@ public class ValidatorTest extends AbstractTestNGSpringContextTests {
 	@ComponentScan(basePackages = "com.github.homeant")
 	@EnableAutoConfiguration
 	public static class Config {
-		 
+
 	}
 }

@@ -41,6 +41,7 @@ import static com.baidu.unbiz.fluentvalidator.ResultCollectors.toComplex;
  *
  * @author zhangxu
  */
+@Deprecated
 public class FluentValidateInterceptor implements MethodInterceptor, InitializingBean, ApplicationContextAware {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(com.baidu.unbiz.fluentvalidator.interceptor.FluentValidateInterceptor.class);

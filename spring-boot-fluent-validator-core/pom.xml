@@ -3,9 +3,9 @@
 		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<parent>
-		<artifactId>fluent-validator</artifactId>
-		<groupId>com.github.lemione</groupId>
-		<version>1.0.2.RELEASE</version>
+		<artifactId>spring-boot-fluent-validator</artifactId>
+		<groupId>io.github.lemiones</groupId>
+		<version>1.0.3.RELEASE</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 
@@ -13,12 +13,13 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>javax.validation</groupId>
-			<artifactId>validation-api</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>com.baidu.unbiz</groupId>
 			<artifactId>fluent-validator-spring</artifactId>
+			<version>${fluent-validator.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.validation</groupId>
+			<artifactId>validation-api</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate.validator</groupId>

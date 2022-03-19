@@ -2,14 +2,14 @@
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.github.lemione</groupId>
-	<artifactId>fluent-validator</artifactId>
-	<version>1.0.2.RELEASE</version>
+	<groupId>io.github.lemiones</groupId>
+	<artifactId>spring-boot-fluent-validator</artifactId>
+	<version>1.0.3.RELEASE</version>
 
 	<packaging>pom</packaging>
 	<name>spring-boot-fluent-validator</name>
 	<description>spring-boot-fluent-validator</description>
-	<url>https://github.com/homeant/fluent-validator</url>
+	<url>https://github.com/lemiones/fluent-validator</url>
 
 	<licenses>
 		<license>
@@ -20,17 +20,17 @@
 	</licenses>
 
 	<scm>
-		<url>https://github.com/homeant/fluent-validator</url>
-		<connection>scm:git:git@github.com:homeant/fluent-validator.git</connection>
-		<developerConnection>scm:git:git@github.com:homeant/fluent-validator.git</developerConnection>
+		<url>https://github.com/lemiones/fluent-validator</url>
+		<connection>scm:git:git@github.com:lemiones/fluent-validator.git</connection>
+		<developerConnection>scm:git:git@github.com:lemiones/fluent-validator.git</developerConnection>
 		<tag>HEAD</tag>
 	</scm>
 
 	<developers>
 		<developer>
-			<name>黄天辉</name>
-			<email>junchen1314@foxmail.com</email>
-			<url>https://github.com/homeant</url>
+			<name>Lemione Yang</name>
+			<email>tjkitty2002@gmail.com</email>
+			<url>https://github.com/lemiones</url>
 		</developer>
 	</developers>
 
@@ -43,10 +43,6 @@
 		<spring-boot.version>2.3.12.RELEASE</spring-boot.version>
 		<fluent-validator.version>1.0.9</fluent-validator.version>
 		<hibernate-validator.version>6.1.7.Final</hibernate-validator.version>
-		<commons-collections4.version>4.4</commons-collections4.version>
-		<commons-lang3.version>3.9</commons-lang3.version>
-		<guave.version>28.1-jre</guave.version>
-		<json-path.version>2.4.0</json-path.version>
 	</properties>
 
 	<dependencyManagement>
@@ -68,6 +64,7 @@
 			<dependency>
 				<groupId>com.baidu.unbiz</groupId>
 				<artifactId>fluent-validator-spring</artifactId>
+				<version>${fluent-validator.version}</version>
 				<exclusions>
 					<exclusion>
 						<groupId>org.slf4j</groupId>
@@ -86,7 +83,6 @@
 						<groupId>org.springframework</groupId>
 					</exclusion>
 				</exclusions>
-				<version>${fluent-validator.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -186,12 +182,12 @@
 			<id>release</id>
 			<distributionManagement>
 				<repository>
-					<id>oss-releases</id>
-					<url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+					<id>ossrh</id>
+					<url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
 				</repository>
 				<snapshotRepository>
-					<id>oss-snapshots</id>
-					<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+					<id>ossrh</id>
+					<url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
 				</snapshotRepository>
 			</distributionManagement>
 			<build>
@@ -215,7 +211,7 @@
 	</profiles>
 
 	<modules>
+		<module>spring-boot-fluent-validator-core</module>
 		<module>spring-boot-starter-fluent-validator</module>
-		<module>fluent-validator-core</module>
 	</modules>
 </project>

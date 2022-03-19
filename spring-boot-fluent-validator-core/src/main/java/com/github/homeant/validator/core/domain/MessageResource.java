@@ -15,13 +15,13 @@
  */
 package com.github.homeant.validator.core.domain;
 
-import java.io.Serializable;
-
 import lombok.Data;
+
+import java.io.Serializable;
 
 /**
  * 国际化实体对象
- * 
+ *
  * @author junchen junchen1314@foxmail.com
  * @Data 2018-12-10 13:58:57
  */

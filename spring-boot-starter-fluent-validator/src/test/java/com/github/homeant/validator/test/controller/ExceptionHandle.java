@@ -16,14 +16,11 @@
 package com.github.homeant.validator.test.controller;
 
 
+import com.github.homeant.validator.core.exception.FluentValidateException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import com.github.homeant.validator.core.exception.ValidateFailException;
-
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author junchen junchen1314@foxmail.com
@@ -32,9 +29,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestControllerAdvice
 public class ExceptionHandle {
-	
-	@ExceptionHandler(value = ValidateFailException.class)
-    public ResponseEntity<Object> Handle(ValidateFailException e){
+
+	@ExceptionHandler(value = FluentValidateException.class)
+	public ResponseEntity<Object> Handle(FluentValidateException e) {
 		return ResponseEntity.status(400).body(e.getErrors());
-    }
+	}
 }

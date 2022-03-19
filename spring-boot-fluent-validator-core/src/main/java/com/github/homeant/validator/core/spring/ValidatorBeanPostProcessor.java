@@ -15,30 +15,29 @@
  */
 package com.github.homeant.validator.core.spring;
 
-import java.lang.annotation.Annotation;
-
-
+import com.baidu.unbiz.fluentvalidator.annotation.FluentValid;
+import com.baidu.unbiz.fluentvalidator.interceptor.FluentValidateInterceptor;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.aop.framework.AbstractAdvisingBeanPostProcessor;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
-import com.baidu.unbiz.fluentvalidator.annotation.FluentValid;
 
-import lombok.Getter;
-import lombok.Setter;
+import java.lang.annotation.Annotation;
 
 /**
  * @author junchen junchen1314@foxmail.com
  * @Data 2018-12-13 14:11:37
  */
 public class ValidatorBeanPostProcessor extends AbstractAdvisingBeanPostProcessor implements BeanFactoryAware {
-	
+
 	private static final long serialVersionUID = -3858983354365245870L;
 
 	@Getter
 	@Setter
 	private Class<? extends Annotation> validatedAnnotationType = FluentValid.class;
-	
+
 	@Getter
 	@Setter
 	private FluentValidateInterceptor fluentValidateInterceptor;
@@ -50,5 +49,5 @@ public class ValidatorBeanPostProcessor extends AbstractAdvisingBeanPostProcesso
 		pointcutAdvisor.setBeanFactory(beanFactory);
         this.advisor = pointcutAdvisor;
 	}
-	
+
 }

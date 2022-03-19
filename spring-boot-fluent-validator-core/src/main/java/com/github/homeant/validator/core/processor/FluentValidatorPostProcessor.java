@@ -2,7 +2,6 @@ package com.github.homeant.validator.core.processor;
 
 import com.baidu.unbiz.fluentvalidator.FluentValidator;
 import com.baidu.unbiz.fluentvalidator.support.MethodNameFluentValidatorPostProcessor;
-import lombok.Data;
 import org.aopalliance.intercept.MethodInvocation;
 
 /**
@@ -11,7 +10,7 @@ import org.aopalliance.intercept.MethodInvocation;
  * @author junchen
  * @date 2019-12-27 23:39
  */
-@Data
+@Deprecated
 public class FluentValidatorPostProcessor extends MethodNameFluentValidatorPostProcessor {
 
 	@Override

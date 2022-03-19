@@ -19,7 +19,7 @@ import com.baidu.unbiz.fluentvalidator.ValidateCallback;
 import com.baidu.unbiz.fluentvalidator.ValidationError;
 import com.baidu.unbiz.fluentvalidator.Validator;
 import com.baidu.unbiz.fluentvalidator.validator.element.ValidatorElementList;
-import com.github.homeant.validator.core.exception.ValidateFailException;
+import com.github.homeant.validator.core.exception.FluentValidateException;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -40,15 +40,15 @@ public class DefaultValidateCallback implements ValidateCallback {
 
 	@Override
 	public void onFail(ValidatorElementList validatorElementList, List<ValidationError> errors) {
-		Object clazz = validatorElementList.getAllValidatorElements().get(0).getTarget();
-		ValidateFailException exception = new ValidateFailException(clazz.getClass() + " validated failures...");
+		Object target = validatorElementList.getAllValidatorElements().get(0).getTarget();
+		FluentValidateException exception = new FluentValidateException(target.getClass() + " validated failures...");
 		exception.setErrors(errors);
 		throw exception;
 	}
 
 	@Override
 	public void onUncaughtException(Validator validator, Exception e, Object target) throws Exception {
-		log.error("Failed to validating the object:{},  error:{}", target, e.getMessage());
+		log.error("Failed to validate the object:{},  error:{}", target, e.getMessage());
 		throw e;
 	}
 

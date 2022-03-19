@@ -9,7 +9,7 @@
 
 ```xml
 <dependency>
-	<groupId>com.github.lemione</groupId>
+	<groupId>io.github.lemiones</groupId>
 	<artifactId>spring-boot-starter-fluent-validator</artifactId>
 	<version>1.0.2</version>
 </dependency>

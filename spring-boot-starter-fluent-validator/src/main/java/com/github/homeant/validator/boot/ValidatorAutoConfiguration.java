@@ -17,13 +17,13 @@ package com.github.homeant.validator.boot;
 
 
 import com.baidu.unbiz.fluentvalidator.ValidateCallback;
+import com.baidu.unbiz.fluentvalidator.interceptor.FluentValidateInterceptor;
 import com.baidu.unbiz.fluentvalidator.support.MessageSupport;
+import com.baidu.unbiz.fluentvalidator.support.MethodNameFluentValidatorPostProcessor;
 import com.github.homeant.validator.ValidatorProperties;
 import com.github.homeant.validator.core.callback.DefaultValidateCallback;
 import com.github.homeant.validator.core.i18n.DefaultMessageResource;
 import com.github.homeant.validator.core.i18n.MessageProvider;
-import com.github.homeant.validator.core.processor.FluentValidatorPostProcessor;
-import com.github.homeant.validator.core.spring.FluentValidateInterceptor;
 import com.github.homeant.validator.core.spring.ValidatorBeanPostProcessor;
 import lombok.Data;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -48,10 +48,10 @@ import javax.validation.Validator;
  */
 @Data
 @Configuration
-@ConditionalOnClass(value = {com.baidu.unbiz.fluentvalidator.Validator.class})
+@ConditionalOnClass(value = { com.baidu.unbiz.fluentvalidator.Validator.class })
 @ConditionalOnProperty(prefix = ValidatorProperties.PREFIX, value = "enable", matchIfMissing = true, havingValue = "true")
-@AutoConfigureBefore({MessageSourceAutoConfiguration.class})
-@EnableConfigurationProperties({ValidatorProperties.class})
+@AutoConfigureBefore({ MessageSourceAutoConfiguration.class })
+@EnableConfigurationProperties({ ValidatorProperties.class })
 public class ValidatorAutoConfiguration {
 
 	private final ValidatorProperties validatorProperties;
@@ -61,15 +61,14 @@ public class ValidatorAutoConfiguration {
 	/**
 	 * 国际化资源
 	 *
-	 * @param messageService
 	 * @return MessageSource
 	 * @author junchen junchen1314@foxmail.com
 	 * @Data 2018-12-10 16:04:51
 	 */
 	@Bean
 	@ConditionalOnBean(MessageProvider.class)
-	public MessageSource messageSource(MessageProvider messageService, MessageSource messageSource) {
-		DefaultMessageResource resource = new DefaultMessageResource(messageService);
+	public MessageSource messageSource(MessageProvider messageProvider, MessageSource messageSource) {
+		DefaultMessageResource resource = new DefaultMessageResource(messageProvider);
 		resource.setParentMessageSource(messageSource);
 		return resource;
 	}
@@ -96,10 +95,10 @@ public class ValidatorAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnBean({ValidateCallback.class})
+	@ConditionalOnBean({ ValidateCallback.class })
 	public FluentValidateInterceptor fluentValidateInterceptor(ValidateCallback callback) {
 		FluentValidateInterceptor validateInterceptor = new FluentValidateInterceptor();
-		validateInterceptor.setFluentValidatorPostProcessor(new FluentValidatorPostProcessor());
+		validateInterceptor.setFluentValidatorPostProcessor(new MethodNameFluentValidatorPostProcessor());
 		validateInterceptor.setCallback(callback);
 		validateInterceptor.setValidator(validator);
 		validateInterceptor.setHibernateDefaultErrorCode(validatorProperties.getHibernateDefaultErrorCode());
@@ -108,7 +107,9 @@ public class ValidatorAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public ValidatorBeanPostProcessor validatorBeanPostProcessor(FluentValidateInterceptor fluentValidateInterceptor, Environment environment) {
+	public ValidatorBeanPostProcessor validatorBeanPostProcessor(
+			FluentValidateInterceptor fluentValidateInterceptor, Environment environment
+	) {
 		ValidatorBeanPostProcessor postProcessor = new ValidatorBeanPostProcessor();
 		boolean proxyTargetClass = environment.getProperty("spring.aop.proxy-target-class", Boolean.class, true);
 		postProcessor.setProxyTargetClass(proxyTargetClass);
